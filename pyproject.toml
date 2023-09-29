@@ -1,0 +1,25 @@
+[project]
+name = "Festo Coding Challenge 2023"
+description = "My solutions for the Festo Coding Challenge 2023."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Other/Proprietary",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "Pillow"
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest"
+]
+
+[project.urls]
+homepage = "https://2023.coding-challenge.festo.com/"
+repository = "https://github.com/SteScheller/FestoCodingChallenge2023"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
