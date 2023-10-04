@@ -1,7 +1,7 @@
 import operator
 
 
-def evaluate(first, second, operation) -> str:
+def evaluate(first: str, second: str, operation: str) -> str:
     operand_map = {"X": 0, "Y": 1}
     operation_map = {"R": operator.or_, "N": operator.and_}
     result = ""

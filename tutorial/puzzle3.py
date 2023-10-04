@@ -20,7 +20,7 @@ class State(Flag):
         return word in State.__members__
 
 
-def compute_state(log=str) -> State:
+def compute_state(log: str) -> State:
     state = State.inactive
     for w in [w.strip() for w in log.split(" ")]:
         if State.is_state_value(w):
