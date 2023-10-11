@@ -1,8 +1,11 @@
+import pytest
+
 from tutorial.puzzle3 import compute_state, State
 
 
-def test_compute_state():
-    data = [
+@pytest.mark.parametrize(
+    "log, result",
+    [
         ("idle reversed ready reversed toggled reversed reversed", State.unsafe),
         ("ready inverted switched quiet inverted flipped reversed", State.unsafe),
         ("primed ready switched ready toggled disabled toggled", State.unsafe),
@@ -13,7 +16,7 @@ def test_compute_state():
         ("live quiet disabled flipped toggled toggled reversed toggled", State.unsafe),
         ("standby toggled inverted reversed reversed switched", State.unsafe),
         ("armed live flipped flipped ready reversed", State.safe),
-    ]
-
-    for log, result in data:
-        assert compute_state(log) == result
+    ],
+)
+def test_compute_state(log: str, result: State):
+    assert compute_state(log) == result
