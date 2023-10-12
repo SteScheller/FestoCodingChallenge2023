@@ -1,8 +1,16 @@
-from typing import List
+from typing import List, Set
 
 import pytest
 
-from chapter2.puzzle1 import Hammer, create_hammers, is_forgeable
+from chapter2.puzzle1 import (
+    create_hammers,
+    Hammer,
+    Hammers,
+    is_forgeable,
+    apply_step,
+    Step,
+    find_possible_steps,
+)
 
 
 @pytest.fixture(scope="module")
@@ -25,14 +33,47 @@ def hammers() -> List[Hammer]:
     [
         ("BC", True),
         ("CB", True),
-        ("DD", True),
-        ("BD", True),
-        ("CD", True),
-        ("FE", True),
-        ("AF", True),
-        ("FA", True),
+        ("DD", False),
+        ("BD", False),
+        ("CD", False),
+        ("FE", False),
+        ("AF", False),
+        ("FA", False),
         ("EE", False),
+        ("EF", False),
+        ("AAA", False),
+        ("BFE", True),
+        ("FEAF", False),
     ],
 )
-def test_is_forgable(hammers: List[Hammer], key: str, is_forgeable_result: bool):
+def test_is_forgable(hammers: Hammers, key: str, is_forgeable_result: bool):
     assert is_forgeable(hammers, key) == is_forgeable_result
+
+
+@pytest.mark.parametrize(
+    "step, key, result_key",
+    [
+        ((7, 0), "FABCD", "DBCD"),
+        ((0, 2), "FABCD", "FAAD"),
+        ((4, 3), "FABCD", "FABC"),
+        ((6, 0), "AFBCBDD", "DBCBDD"),
+        ((0, 2), "AFBCBDD", "AFABDD"),
+        ((1, 3), "AFBCBDD", "AFBADD"),
+        ((3, 4), "AFBCBDD", "AFBCBD"),
+        ((2, 5), "AFBCBDD", "AFBCBB"),
+    ],
+)
+def test_apply_step(hammers: Hammers, step: Step, key: str, result_key):
+    assert apply_step(hammers, step, key) == result_key
+
+
+@pytest.mark.parametrize(
+    "key, result_steps",
+    [
+        ("BC", {(0, 0)}),
+        ("BCBC", {(0, 0), (0, 2), (1, 1)}),
+        ("AFBCBDD", {(6, 0), (0, 2), (1, 3), (3, 4), (2, 5)}),
+    ],
+)
+def test_find_possible_steps(hammers: Hammers, key: str, result_steps: Set[Step]):
+    assert set(find_possible_steps(hammers, key)) == result_steps
