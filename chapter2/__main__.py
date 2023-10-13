@@ -3,6 +3,7 @@ from pathlib import Path
 from PIL import Image
 
 from .puzzle1 import create_hammers, is_forgeable
+from .puzzle2 import compute_task
 
 
 p = Path(__file__).parent / "resources"
@@ -18,6 +19,9 @@ for k in possible_keys:
         break
 print(f"Puzzle 1: {key}")
 
+first = compute_task("YXXXXYXY; XXXXXYXY; G; Q;")
+second = compute_task("YXXXYXYX; YYYXXXXX; L; Q;")
+print(f"Puzzle 2: {first + second}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
 plate1 = Image.open(Path(__file__).parent / "resources/plate_21.png")
