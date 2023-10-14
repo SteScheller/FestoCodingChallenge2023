@@ -19,15 +19,15 @@ for k in possible_keys:
         break
 print(f"Puzzle 1: {key}")
 
-first = compute_task("YXXXXYXY; XXXXXYXY; G; Q;")
-second = compute_task("YXXXYXYX; YYYXXXXX; L; Q;")
+first = compute_task("YXXYXXYY; YXYXXXYX; G; E;")
+second = compute_task("YXYXYXYX; YXYXXXYY; W; E;")
 print(f"Puzzle 2: {first + second}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
 plate1 = Image.open(Path(__file__).parent / "resources/plate_21.png")
-# plate2 = Image.open(Path(__file__).parent / "resources/plate_22.png")
+plate2 = Image.open(Path(__file__).parent / "resources/plate_22.png")
 # plate3 = Image.open(Path(__file__).parent / "resources/plate_23.png")
 panel.paste(plate1, mask=plate1)
-# panel.paste(plate2, mask=plate2)
+panel.paste(plate2, mask=plate2)
 # panel.paste(plate3, mask=plate3)
 panel.show()
