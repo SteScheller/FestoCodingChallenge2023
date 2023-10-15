@@ -4,6 +4,7 @@ from PIL import Image
 
 from .puzzle1 import create_hammers, is_forgeable
 from .puzzle2 import compute_task
+from .puzzle3 import parse_config, can_be_balanced
 
 
 p = Path(__file__).parent / "resources"
@@ -22,6 +23,15 @@ print(f"Puzzle 1: {key}")
 first = compute_task("YXXYXXYY; YXYXXXYX; G; E;")
 second = compute_task("YXYXYXYX; YXYXXXYY; W; E;")
 print(f"Puzzle 2: {first + second}")
+
+with open(p / "23_trap_right_side.txt") as f:
+    configs = f.readlines()
+safe_trap_ids = list()
+for c in configs:
+    id_, flasks = parse_config(c)
+    if can_be_balanced(flasks):
+        safe_trap_ids.append(id_)
+print(f"Puzzle 3: {sum(safe_trap_ids)}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
 plate1 = Image.open(Path(__file__).parent / "resources/plate_21.png")

@@ -3,6 +3,7 @@ from functools import reduce
 from operator import mul
 from math import gcd
 from re import search
+from itertools import count
 
 Flasks = List[int]
 
@@ -11,12 +12,12 @@ def get_flasks(input_: str) -> Flasks:
     return [int(x) for x in input_.split(" ")]
 
 
-def parse_config(config: str) -> Tuple[Optional[int], Flasks, Flasks]:
-    m = search(r"(\d+: )?([\d ]+) - ([\d ]+)", config)
-    id_, l, r = m.groups()
+def parse_config(config: str) -> Tuple[Optional[int], Flasks]:
+    m = search(r"(\d+: )?([\d ]+) -", config)
+    id_, f = m.groups()
     if id_ is not None:
         id_ = int(id_[:-2])
-    return id_, get_flasks(l), get_flasks(r)
+    return id_, get_flasks(f)
 
 
 def fullfils_number_equality(left: Flasks, right: Flasks) -> bool:
@@ -48,9 +49,10 @@ def fullfils_diversity(left: Flasks, right: Flasks) -> bool:
     return len(set(lr)) == len(lr)
 
 
-def is_activated(left: Flasks, right: Flasks) -> bool:
-    return not (
-        fullfils_number_equality(left, right)
-        and fullfils_weight_equality(left, right)
-        and fullfils_diversity(left, right)
-    )
+def can_be_balanced(left: Flasks) -> bool:
+    right = set()
+    for n in count(1):
+        right.add(n)
+        right.remove(n)
+        break
+    return False
