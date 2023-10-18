@@ -43,7 +43,6 @@ def compute_weight_fraction(flasks: Flasks) -> Tuple[int, int]:
     return nom // divisor, denom // divisor
 
 
-@cache
 def can_total_weight_still_be_reached(target: Flasks, current: Flasks, n: int) -> bool:
     n1, d1 = compute_weight_fraction(target)
     n2, d2 = compute_weight_fraction(current)
@@ -68,7 +67,6 @@ def fullfils_diversity(left: Flasks, right: Flasks) -> bool:
     return len(set(lr)) == len(lr)
 
 
-@cache
 def is_balanced(left: Flasks, right: Flasks) -> bool:
     return (
         fullfils_number_equality(left, right)
