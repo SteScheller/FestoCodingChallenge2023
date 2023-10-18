@@ -28,16 +28,16 @@ with open(p / "23_trap_right_side.txt") as f:
     configs = f.readlines()
 safe_trap_ids = list()
 for c in configs:
-    id_, flasks = parse_config(c)
-    if can_be_balanced(flasks):
+    id_, left, right = parse_config(c)
+    if can_be_balanced(left, right):
         safe_trap_ids.append(id_)
 print(f"Puzzle 3: {sum(safe_trap_ids)}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
 plate1 = Image.open(Path(__file__).parent / "resources/plate_21.png")
 plate2 = Image.open(Path(__file__).parent / "resources/plate_22.png")
-# plate3 = Image.open(Path(__file__).parent / "resources/plate_23.png")
+plate3 = Image.open(Path(__file__).parent / "resources/plate_23.png")
 panel.paste(plate1, mask=plate1)
 panel.paste(plate2, mask=plate2)
-# panel.paste(plate3, mask=plate3)
+panel.paste(plate3, mask=plate3)
 panel.show()
