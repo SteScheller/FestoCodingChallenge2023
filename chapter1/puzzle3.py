@@ -38,7 +38,7 @@ def fullfils_weight_equality(left: Flasks, right: Flasks) -> bool:
             nom = sum(summands)
             denom = reduce(mul, flasks)
             divisor = gcd(nom, denom)
-        return nom / divisor, denom / divisor
+        return nom // divisor, denom // divisor
 
     return compute_weight_fraction(left) == compute_weight_fraction(right)
 
