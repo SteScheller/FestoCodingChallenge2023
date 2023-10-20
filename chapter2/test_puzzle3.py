@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 
 import pytest
 
@@ -12,7 +12,7 @@ import chapter2.puzzle3 as puzzle3
         ("   60: 2 40 - X X", 60, (2, 40)),
     ],
 )
-def test_parse_config(config: str, id_: Optional[bool], flasks: List[int]):
+def test_parse_config(config: str, id_: Optional[bool], flasks: puzzle3.Flasks):
     assert puzzle3.parse_config(config)[:2] == (id_, flasks)
 
 
