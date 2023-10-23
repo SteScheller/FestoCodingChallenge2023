@@ -2,21 +2,24 @@ from pathlib import Path
 
 from PIL import Image
 
-# from .puzzle1 import create_hammers, find_forgable_keys
+from .puzzle1 import create_hammers, is_long_key_forgable
 from .puzzle2 import compute_task
 
 # from .puzzle3 import parse_config, can_be_balanced
 
 
-# p = Path(__file__).parent / "resources"
-# with open(p / "hammer_collection.txt") as f:
-#     hammer_collection = f.readlines()
-# hammers = create_hammers(hammer_collection)
-# with open(p / "31_keymaker_forge_2.txt") as f:
-#     keys = f.readlines()
-# keys = [k.strip() for k in keys]
-# key = find_forgable_keys(hammers, keys)[0]
-# print(f"Puzzle 1: {key}")
+p = Path(__file__).parent / "resources"
+with open(p / "hammer_collection.txt") as f:
+    hammer_collection = f.readlines()
+hammers = create_hammers(hammer_collection)
+with open(p / "31_keymaker_forge_2.txt") as f:
+    possible_keys = f.readlines()
+possible_keys = [k.strip() for k in possible_keys]
+for k in possible_keys:
+    if is_long_key_forgable(hammers, k):
+        key = k
+        break
+print(f"Puzzle 1: {key}")
 
 solution = "".join(
     [

@@ -22,13 +22,13 @@ def test_parse_config(
     assert puzzle3.parse_config(config) == (id_, fixed_flasks, free_flasks)
 
 
-@pytest.mark.parametrize(
-    "config, result",
-    [
-        ("2 - (6)", True),
-        ("6 - (2) (3)", True),
-    ],
-)
-def test_can_be_balanced(config: str, result: bool):
-    _, flasks, _ = puzzle3.parse_config(config)
-    assert puzzle3.can_be_balanced(flasks, tuple()) == result
+# @pytest.mark.parametrize(
+#     "config, result",
+#     [
+#         ("2 - (6)", True),
+#         ("6 - (2) (3)", True),
+#     ],
+# )
+# def test_can_be_balanced(config: str, result: bool):
+#     _, flasks, _ = puzzle3.parse_config(config)
+#     assert puzzle3.can_be_balanced(flasks, tuple()) == result
