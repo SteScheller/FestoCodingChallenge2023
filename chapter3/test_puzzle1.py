@@ -11,7 +11,8 @@ from chapter3.puzzle1 import (
     Step,
     find_possible_steps,
     split_into_segments,
-    is_long_key_forgable,
+    check_segment,
+    is_long_key_forgeable,
 )
 
 
@@ -122,6 +123,23 @@ def test_split_into_segments(key: str, result_segments: List[str]):
 
 
 @pytest.mark.parametrize(
+    "segment, result",
+    [
+        ("F", True),
+        ("FE", True),
+        ("BCD", True),
+        ("BCCB", True),
+        ("BCDCB", True),
+        ("AB", False),
+        ("DD", False),
+        ("E", False),
+    ],
+)
+def test_check_segment(hammers: Hammers, segment: str, result: bool):
+    assert check_segment(hammers, segment) == result
+
+
+@pytest.mark.parametrize(
     "key, is_forgeable_result",
     [
         ("BC", True),
@@ -137,9 +155,21 @@ def test_split_into_segments(key: str, result_segments: List[str]):
         ("AAA", False),
         ("BFE", True),
         ("FEAF", False),
+        ("AFABCFEBC", True),
+        ("AAFBCBCCD", True),
+        ("DAFAFAFBC", True),
+        ("CBDCDCDFA", True),
         ("CFCDDFBFED", True),
         ("AFBFACDDFFE", True),
+        ("FFEFEFECDCDCDFEAF", True),
+        ("BCDFAAFBDAFCBBDAF", True),
+        ("DCDDAFDBDCDFACDFA", True),
+        ("ADDFECBFEAFCBCDFE", True),
+        ("BDDAFFEBCFEDDFAFABCBCFACDDDAFFAAF", True),
+        ("BCDDDDDBCAFDDFAAFDDCBBCAFFADDAFCD", True),
+        ("DFBFAAFFABCDDDDAFCBFEFABCBDDDCBCB", True),
+        ("EDBBDFECDFEFEFACDCDAFFAFECDCDCDFA", True),
     ],
 )
 def test_is_long_key_forgable(hammers: Hammers, key: str, is_forgeable_result: bool):
-    assert is_long_key_forgable(hammers, key) == is_forgeable_result
+    assert is_long_key_forgeable(hammers, key) == is_forgeable_result

@@ -1,6 +1,7 @@
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
 from re import search
 from functools import cache
+from itertools import product
 
 
 class Hammer:
@@ -39,17 +40,21 @@ def apply_step(hammers: Hammers, step: Step, key: str) -> str:
 
 
 @cache
-def is_forgeable(hammers: Hammers, key: str) -> bool:
-    if len(key) == 0:
+def is_reducable(hammers: Hammers, key: str, base: str) -> bool:
+    if key == base:
+        return True
+    elif len(key) == 0:
         return False
-    if len(key) == 1:
-        return key == "A"
     else:
         possible_steps = find_possible_steps(hammers, key)
         for s in possible_steps:
-            if is_forgeable(hammers, apply_step(hammers, s, key)):
+            if is_reducable(hammers, apply_step(hammers, s, key), base):
                 return True
     return False
+
+
+def is_forgeable(hammers: Hammers, key: str) -> bool:
+    return is_reducable(hammers, key, "A")
 
 
 def split_into_segments(key: str) -> List[str]:
@@ -77,21 +82,34 @@ def split_into_segments(key: str) -> List[str]:
 
 
 @cache
-def is_long_key_forgable(hammers: Hammers, key: str) -> bool:
+def check_segment(hammers: Hammers, segment: str) -> bool:
+    if segment in {"A", "B", "C", "D", "F", "FE"}:
+        return True
+    else:
+        return is_reducable(hammers, segment, "A") or is_reducable(hammers, segment, "AA")
+
+
+def generate_segment_iterator(hammers: Hammers, segments: List[str]) -> Iterable:
+    iterables = list()
+
+    for s in segments:
+        if s in {"A", "B", "C", "D", "F", "FE"}:
+            iterables.append([s])
+        else:
+            temp = [token for token in ("A", "AA") if is_reducable(hammers, s, token)]
+            temp.append(s)
+            iterables.append(temp)
+    return product(*iterables)
+
+
+@cache
+def is_long_key_forgeable(hammers: Hammers, key: str) -> bool:
     segments = split_into_segments(key)
-    if not all(
-        [is_forgeable(hammers, s) for s in segments if (s not in {"F", "FE"}) and (len(s) > 1)]
-    ):
+    if not all([check_segment(hammers, s) for s in segments]):
         return False
 
-    segment_map = {
-        "A": "A",
-        "B": "B",
-        "C": "C",
-        "D": "D",
-        "E": "E",
-        "F": "F",
-        "FE": "C",
-    }
-    segments = [segment_map[s] if s in segment_map else "A" for s in segments]
-    return is_forgeable(hammers, "".join(segments))
+    for segments in generate_segment_iterator(hammers, segments):
+        if is_forgeable(hammers, "".join(segments)):
+            return True
+
+    return False
