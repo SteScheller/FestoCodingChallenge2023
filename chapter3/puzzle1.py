@@ -83,22 +83,29 @@ def split_into_segments(key: str) -> List[str]:
 
 @cache
 def check_segment(hammers: Hammers, segment: str) -> bool:
-    if segment in {"A", "B", "C", "D", "F", "FE"}:
-        return True
-    else:
-        return is_reducable(hammers, segment, "A") or is_reducable(hammers, segment, "AA")
+    return (
+        is_reducable(hammers, segment, "A")
+        or is_reducable(hammers, segment, "AA")
+        or is_reducable(hammers, segment, "B")
+        or is_reducable(hammers, segment, "C")
+        or is_reducable(hammers, segment, "D")
+        or is_reducable(hammers, segment, "F")
+        or is_reducable(hammers, segment, "FE")
+    )
 
 
 def generate_segment_iterator(hammers: Hammers, segments: List[str]) -> Iterable:
     iterables = list()
+    base_segments = list("ABCD") + ["".join(x) for x in product("ABCD", repeat=2)]
 
     for s in segments:
-        if s in {"A", "B", "C", "D", "F", "FE"}:
-            iterables.append([s])
+        if s == "F":
+            iterables.append(["F"])
+        elif s == "FE":
+            iterables.append(["C"])
         else:
-            temp = [token for token in ("A", "AA") if is_reducable(hammers, s, token)]
-            temp.append(s)
-            iterables.append(temp)
+            temp = [base for base in base_segments if is_reducable(hammers, s, base)]
+            iterables.append(temp + [s])
     return product(*iterables)
 
 

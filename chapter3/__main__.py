@@ -16,7 +16,7 @@ hammers = create_hammers(hammer_collection)
 with open(p / "31_keymaker_forge_2.txt") as f:
     possible_keys = f.readlines()
 possible_keys = [k.strip() for k in possible_keys]
-for k in tqdm(possible_keys):
+for k in tqdm(possible_keys[920:925]):
     if is_long_key_forgeable(hammers, k):
         key = k
         break
@@ -42,10 +42,10 @@ print(f"Puzzle 2: {solution}")
 # print(f"Puzzle 3: {sum(safe_trap_ids)}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
-# plate1 = Image.open(Path(__file__).parent / "resources/plate_31.png")
+plate1 = Image.open(Path(__file__).parent / "resources/plate_31.png")
 plate2 = Image.open(Path(__file__).parent / "resources/plate_32.png")
 # plate3 = Image.open(Path(__file__).parent / "resources/plate_33.png")
-# panel.paste(plate1, mask=plate1)
+panel.paste(plate1, mask=plate1)
 panel.paste(plate2, mask=plate2)
 # panel.paste(plate3, mask=plate3)
 panel.show()
