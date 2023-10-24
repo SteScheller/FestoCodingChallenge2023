@@ -9,7 +9,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "Pillow"
+  "Pillow",
+  "tqdm"
 ]
 
 [project.optional-dependencies]

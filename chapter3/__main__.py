@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from PIL import Image
+from tqdm import tqdm
 
 from .puzzle1 import create_hammers, is_long_key_forgeable
 from .puzzle2 import compute_task
@@ -15,8 +16,7 @@ hammers = create_hammers(hammer_collection)
 with open(p / "31_keymaker_forge_2.txt") as f:
     possible_keys = f.readlines()
 possible_keys = [k.strip() for k in possible_keys]
-for i, k in enumerate(possible_keys):
-    print(".", end="")
+for k in tqdm(possible_keys):
     if is_long_key_forgeable(hammers, k):
         key = k
         break

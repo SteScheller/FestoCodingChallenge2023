@@ -105,8 +105,8 @@ def generate_segment_iterator(hammers: Hammers, segments: List[str]) -> Iterable
 @cache
 def is_long_key_forgeable(hammers: Hammers, key: str) -> bool:
     segments = split_into_segments(key)
-    if not all([check_segment(hammers, s) for s in segments]):
-        return False
+    # if not all([check_segment(hammers, s) for s in segments]):
+    #    return False
 
     for segments in generate_segment_iterator(hammers, segments):
         if is_forgeable(hammers, "".join(segments)):

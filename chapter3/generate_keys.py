@@ -1,3 +1,6 @@
+import random
+
+
 def generate_key(iterations: int = 8) -> str:
     """
     1. A -> BC
@@ -10,19 +13,7 @@ def generate_key(iterations: int = 8) -> str:
     8. D -> FA
     """
 
-    from random import randrange
-
-    (
-        A,
-        B,
-        C,
-        D,
-    ) = (
-        "A",
-        "B",
-        "C",
-        "D",
-    )
+    A, B, C, D = "A", "B", "C", "D"
     BC, CB, DD, BD, CD, FE, AF, FA = "BC", "CB", "DD", "BD", "CD", "FE", "AF", "FA"
 
     rules = {A: [BC, CB], B: [DD, BD], C: [CD, FE], D: [AF, FA]}
@@ -30,29 +21,23 @@ def generate_key(iterations: int = 8) -> str:
     symbol = A
     key = [symbol]
 
-    for i in range(iterations):
+    for _ in range(iterations):
         # Select a random production rule
-        symbol_rules = rules[symbol]
-        rule_index = randrange(len(symbol_rules))
-        rule = symbol_rules[rule_index]
+        rule = random.choice(rules[symbol])
 
         # Remove a random occurrence of the production symbol
-        indices = [i for i, x in enumerate(key) if x == symbol]
-        index_removal = randrange(len(indices))
-        key.pop(index_removal)
+        index_removal = random.choice([i for i, x in enumerate(key) if x == symbol])
 
         # Add the new symbols from the production rule to the key
-        key += rule
+        key = key[:index_removal] + [sym for sym in rule] + key[index_removal + 1 :]
 
         # Choose a valid random symbol from the key
         valid_symbols = [x for x in key if x in [A, B, C, D]]
-        symbol_idx = randrange(len(valid_symbols))
-        symbol = valid_symbols[symbol_idx]
+        symbol = random.choice(valid_symbols)
 
     return "".join(key)
 
 
-for i in range(3):
-    print(generate_key())
-    print(generate_key(16))
-    print(generate_key(32))
+for length in (8, 16, 32):
+    for _ in range(5):
+        print(generate_key(length))
