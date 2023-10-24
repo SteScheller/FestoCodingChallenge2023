@@ -1,7 +1,6 @@
 from typing import List, Tuple, Iterable
 from re import search
 from functools import cache
-from itertools import product
 
 
 class Hammer:
@@ -40,21 +39,17 @@ def apply_step(hammers: Hammers, step: Step, key: str) -> str:
 
 
 @cache
-def is_reducable(hammers: Hammers, key: str, base: str) -> bool:
-    if key == base:
+def is_forgeable(hammers: Hammers, key: str) -> bool:
+    if key == "A":
         return True
     elif len(key) == 0:
         return False
     else:
         possible_steps = find_possible_steps(hammers, key)
         for s in possible_steps:
-            if is_reducable(hammers, apply_step(hammers, s, key), base):
+            if is_forgeable(hammers, apply_step(hammers, s, key)):
                 return True
     return False
-
-
-def is_forgeable(hammers: Hammers, key: str) -> bool:
-    return is_reducable(hammers, key, "A")
 
 
 def split_into_segments(key: str) -> List[str]:
@@ -81,42 +76,11 @@ def split_into_segments(key: str) -> List[str]:
     return segments
 
 
-@cache
-def check_segment(hammers: Hammers, segment: str) -> bool:
-    return (
-        is_reducable(hammers, segment, "A")
-        or is_reducable(hammers, segment, "AA")
-        or is_reducable(hammers, segment, "B")
-        or is_reducable(hammers, segment, "C")
-        or is_reducable(hammers, segment, "D")
-        or is_reducable(hammers, segment, "F")
-        or is_reducable(hammers, segment, "FE")
-    )
-
-
-def generate_segment_iterator(hammers: Hammers, segments: List[str]) -> Iterable:
-    iterables = list()
-    base_segments = list("ABCD") + ["".join(x) for x in product("ABCD", repeat=2)]
-
-    for s in segments:
-        if s == "F":
-            iterables.append(["F"])
-        elif s == "FE":
-            iterables.append(["C"])
-        else:
-            temp = [base for base in base_segments if is_reducable(hammers, s, base)]
-            iterables.append(temp + [s])
-    return product(*iterables)
+def shorten_key(hammers: Hammers, key: str) -> Iterable:
+    segments = [s if s != "FE" else "C" for s in split_into_segments(key)]
+    return "".join(segments)
 
 
 @cache
 def is_long_key_forgeable(hammers: Hammers, key: str) -> bool:
-    segments = split_into_segments(key)
-    # if not all([check_segment(hammers, s) for s in segments]):
-    #    return False
-
-    for segments in generate_segment_iterator(hammers, segments):
-        if is_forgeable(hammers, "".join(segments)):
-            return True
-
-    return False
+    return is_forgeable(hammers, shorten_key(hammers, key))

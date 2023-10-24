@@ -11,7 +11,6 @@ from chapter3.puzzle1 import (
     Step,
     find_possible_steps,
     split_into_segments,
-    check_segment,
     is_long_key_forgeable,
 )
 
@@ -120,23 +119,6 @@ def test_find_possible_steps(hammers: Hammers, key: str, result_steps: Set[Step]
 )
 def test_split_into_segments(key: str, result_segments: List[str]):
     assert split_into_segments(key) == result_segments
-
-
-@pytest.mark.parametrize(
-    "segment, result",
-    [
-        ("F", True),
-        ("FE", True),
-        ("BCD", True),
-        ("BCCB", True),
-        ("BCDCB", True),
-        ("AB", False),
-        ("DD", False),
-        ("E", False),
-    ],
-)
-def test_check_segment(hammers: Hammers, segment: str, result: bool):
-    assert check_segment(hammers, segment) == result
 
 
 @pytest.mark.parametrize(

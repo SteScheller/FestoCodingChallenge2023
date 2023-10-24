@@ -16,6 +16,7 @@ hammers = create_hammers(hammer_collection)
 with open(p / "31_keymaker_forge_2.txt") as f:
     possible_keys = f.readlines()
 possible_keys = [k.strip() for k in possible_keys]
+# for k in tqdm(possible_keys) -> "educated guess" to speed things up
 for k in tqdm(possible_keys[920:925]):
     if is_long_key_forgeable(hammers, k):
         key = k
