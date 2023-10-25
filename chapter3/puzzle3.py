@@ -3,58 +3,11 @@ from re import search
 from math import gcd
 from operator import mul
 from itertools import permutations
-from functools import total_ordering, reduce, cache
+from functools import reduce, cache
 from copy import deepcopy
+from fractions import Fraction
 
 Flasks = Tuple[int]
-
-
-@total_ordering
-class Fraction:
-    def __init__(self, nom, denom):
-        c = gcd(nom, denom)
-        self.__nom = nom // c
-        self.__denom = denom // c
-
-    @property
-    def nom(self):
-        return self.__nom
-
-    @nom.setter
-    def nom(self, value):
-        c = gcd(value, self.__denom)
-        self.__nom = value // c
-        self.__denom = self.__denom // c
-
-    @property
-    def denom(self):
-        return self.__denom
-
-    @denom.setter
-    def denom(self, value):
-        c = gcd(value, self.__nom)
-        self.__nom = self.__nom // c
-        self.__denom = value // c
-
-    def __add__(self, other):
-        n = self.__nom * other.denom + other.nom * self.__denom
-        d = self.__denom * other.denom
-        return Fraction(n, d)
-
-    def __sub__(self, other):
-        n = self.__nom * other.denom - other.nom * self.__denom
-        d = self.__denom * other.denom
-        return Fraction(n, d)
-
-    def __eq__(self, other):
-        return (self.__nom == other.nom) and (self.__denom == other.denom)
-
-    def __lt__(self, other):
-        t = self - other
-        return (t.nom * t.denom) <= 0
-
-    def __hash__(self):
-        return hash((self.__nom, self.__denom))
 
 
 def get_fixed_flasks(input_: str) -> Flasks:
@@ -105,7 +58,24 @@ def compute_weight_fraction(flasks: Flasks) -> Fraction:
     return Fraction(nom, denom)
 
 
+def is_linear_combination(target: Fraction, free: Fraction) -> bool:
+    selectors = list()
+    denominators = list(set([x.denominator for x in free]))
+
+    for i in range(1, 2 ** len(denominators)):
+        selectors.append([bool(i & (1 << x)) for x in range(len(denominators))])
+
+    for sel in selectors:
+        factors = [x for i, x in enumerate(denominators) if sel[i]]
+        temp = reduce(mul, factors)
+        c = gcd(target.denominator, temp)
+        if target.denominator == c:
+            return True
+
+    return False
+
+
 def can_be_balanced(fixed: Flasks, free: Flasks) -> bool:
     target = compute_weight_fraction(fixed)
     water_fractions = compute_water_fractions(free)
-    return target in water_fractions
+    return is_linear_combination(target, water_fractions)

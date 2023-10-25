@@ -58,5 +58,5 @@ def test_compute_weight_fraction(flasks: Flasks, fraction_values: List[Tuple[int
     ],
 )
 def test_can_be_balanced(config: str, result: bool):
-    _, flasks, _ = parse_config(config)
-    assert can_be_balanced(flasks, tuple()) == result
+    _, fixed, free = parse_config(config)
+    assert can_be_balanced(fixed, free) == result
