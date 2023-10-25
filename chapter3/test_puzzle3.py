@@ -56,17 +56,19 @@ def test_compute_weight_fraction(flasks: Flasks, fraction_values: List[Tuple[int
 
 
 @pytest.mark.parametrize(
-    "fraction_values, filtered_fraction_values",
+    "fraction_values, target_values, filtered_fraction_values",
     [
-        ({(1, 3), (1, 2), (1, 4)}, ((1, 4), (1, 3))),
+        ({(1, 3), (1, 2), (1, 4)}, (8, 12), ((1, 3), (1, 4))),
     ],
 )
 def test_filter_fractionss(
-    fraction_values: Set[Tuple[int, int]], filtered_fraction_values: Tuple[Tuple[int, int]]
+    fraction_values: Set[Tuple[int, int]],
+    target_values: Tuple[int, int],
+    filtered_fraction_values: Tuple[Tuple[int, int]],
 ):
     fractions = {Fraction(n, d) for (n, d) in fraction_values}
     filtered_fractions = tuple(Fraction(n, d) for (n, d) in filtered_fraction_values)
-    assert filter_fractions(fractions) == filtered_fractions
+    assert filter_fractions(Fraction(*target_values), fractions) == filtered_fractions
 
 
 @pytest.mark.parametrize(
@@ -77,6 +79,7 @@ def test_filter_fractionss(
         ("3 - (1) (2) (4)", False),
         ("4 9 - (1) (2) (36)", True),
         ("4 9 - (3) (12)", False),
+        ("3 9 - (18) (36)", True),
     ],
 )
 def test_can_be_balanced(config: str, result: bool):

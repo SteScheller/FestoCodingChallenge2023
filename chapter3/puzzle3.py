@@ -1,11 +1,15 @@
 from typing import Tuple, Optional, Set, Iterable
 from re import search
-from math import gcd
 from operator import mul
-from itertools import permutations
+from math import gcd
+from itertools import permutations, combinations
 from functools import reduce, cache
 from copy import deepcopy
 from fractions import Fraction
+
+# import sys
+
+# sys.setrecursionlimit(30000)
 
 Flasks = Tuple[int]
 
@@ -66,65 +70,46 @@ def combination_can_be_found(
         return True
     elif current > target:
         return False
+    elif len(used_fractions) == 1:
+        return ((target - current) % used_fractions[0]) == 0
     else:
-        for x in used_fractions:
-            if combination_can_be_found(target, current + x, used_fractions):
+        for i, x in enumerate(used_fractions):
+            if ((target - current) % x) == 0:
+                return True
+            if combination_can_be_found(target, current + x, used_fractions[i:]):
                 return True
     return False
 
 
-def is_linear_combination(target: Fraction, fractions: Set[Fraction]) -> bool:
-    # selectors = list()
-    fractions = list(fractions)
-
-    # prepare possible selection of used fractions
-    # for i in range(1, 2 ** len(fractions)):
-    #    selectors.append([bool(i & (1 << x)) for x in range(len(fractions))])
-
-    # find possibly used fractions by finding combinations whos denominators multiply to a
-    # multiple of the denominator of the target fraction
-    # candidates = list()
-    # denominators = [x.denominator for x in fractions]
-    # for sel in selectors:
-    #    factors = [x for i, x in enumerate(denominators) if sel[i]]
-    #    temp = reduce(mul, factors)
-    #    c = gcd(target.denominator, temp)
-    #    if target.denominator == c:
-    #        candidates.append(sel)
-
-    # check if fractions can be added up to the target fraction
-    used_fractions = fractions
-    used_fractions.sort(reverse=True)
-    return combination_can_be_found(target, Fraction(0, target.denominator), tuple(used_fractions))
-
-    # for sel in candidates:
-    #     used_fractions = [x for i, x, in enumerate(fractions) if sel[i]]
-    #     used_fractions.sort(reverse=True)
-    #     if combination_can_be_found(target, Fraction(0, target.denominator), tuple(used_fractions)):
-    #         return True
-
-    # return False
-
-
-def filter_fractions(fractions: Iterable[Fraction]) -> Tuple[Fraction]:
+def filter_fractions(target: Fraction, fractions: Iterable[Fraction]) -> Tuple[Fraction]:
     fractions = sorted(set(fractions))
     filtered = [fractions[0]]
 
+    # remove fractions that are to big or are multiples of other smaller fractions
     for f in fractions[1:]:
+        if f > target:
+            break
         is_multiple = False
         for ff in filtered:
-            if ((f // ff) * ff) == f:
+            if (f % ff) == 0:
                 is_multiple = True
                 break
         if not is_multiple:
             filtered.append(f)
-    return tuple(filtered)
+
+    filtered_denominators = set()
+    denominators = {x.denominator for x in filtered}
+    for n in range(1, len(denominators) + 1):
+        for dd in combinations(denominators, n):
+            gcd_ = gcd(target.denominator, reduce(mul, dd))
+            if gcd_ == target.denominator:
+                filtered_denominators.update(dd)
+    filtered = [f for f in filtered if f.denominator in filtered_denominators]
+    return tuple(reversed(filtered))
 
 
 def can_be_balanced(fixed: Flasks, free: Flasks) -> bool:
     target = compute_weight_fraction(fixed)
     water_fractions = compute_water_fractions(free)
-    water_fractions = filter_fractions(water_fractions)
-    print(target)
-    print(water_fractions)
+    water_fractions = filter_fractions(target.denominator, water_fractions)
     return combination_can_be_found(target, Fraction(0, target.denominator), water_fractions)
