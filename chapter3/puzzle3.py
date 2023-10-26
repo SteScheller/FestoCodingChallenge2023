@@ -3,7 +3,7 @@ from re import search
 from operator import mul
 from math import gcd
 from itertools import permutations, combinations
-from functools import reduce, cache
+from functools import reduce
 from copy import deepcopy
 from fractions import Fraction
 
@@ -43,7 +43,6 @@ def compute_water_fractions(flasks: Flasks) -> Set[Fraction]:
     return fractions
 
 
-@cache
 def compute_weight_fraction(flasks: Flasks) -> Fraction:
     if len(flasks) == 0:
         nom = 0
