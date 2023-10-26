@@ -3,6 +3,7 @@ from pathlib import Path
 
 from PIL import Image
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 
 from .puzzle1 import create_hammers, is_long_key_forgeable
 from .puzzle2 import compute_task
@@ -36,8 +37,7 @@ print(f"Puzzle 2: {solution}")
 
 with open(p / "33_trap_water.txt") as f:
     configs = f.readlines()
-pool = mp.Pool(mp.cpu_count())
-sum_ = sum(tqdm(pool.imap(compute_per_config_job, configs), total=len(configs)))
+sum_ = sum(process_map(compute_per_config_job, configs, max_workers=mp.cpu_count(), chunksize=1))
 print(f"Puzzle 3: {sum_}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
