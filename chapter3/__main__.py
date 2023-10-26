@@ -1,3 +1,4 @@
+import multiprocessing as mp
 from pathlib import Path
 
 from PIL import Image
@@ -5,7 +6,7 @@ from tqdm import tqdm
 
 from .puzzle1 import create_hammers, is_long_key_forgeable
 from .puzzle2 import compute_task
-from .puzzle3 import parse_config, can_be_balanced
+from .puzzle3 import compute_per_config_job
 
 
 p = Path(__file__).parent / "resources"
@@ -32,14 +33,12 @@ solution = "".join(
 )
 print(f"Puzzle 2: {solution}")
 
+
 with open(p / "33_trap_water.txt") as f:
     configs = f.readlines()
-safe_trap_ids = list()
-for c in tqdm(configs):
-    id_, left, right = parse_config(c)
-    if can_be_balanced(left, right):
-        safe_trap_ids.append(id_)
-print(f"Puzzle 3: {sum(safe_trap_ids)}")
+pool = mp.Pool(mp.cpu_count())
+sum_ = sum(tqdm(pool.imap(compute_per_config_job, configs), total=len(configs)))
+print(f"Puzzle 3: {sum_}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
 plate1 = Image.open(Path(__file__).parent / "resources/plate_31.png")

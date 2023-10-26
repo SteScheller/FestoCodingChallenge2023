@@ -111,3 +111,11 @@ def can_be_balanced(fixed: Flasks, free: Flasks) -> bool:
     water_fractions = compute_water_fractions(free)
     water_fractions = filter_fractions(target.denominator, water_fractions)
     return combination_can_be_found(target, Fraction(0, target.denominator), water_fractions)
+
+
+def compute_per_config_job(config: str) -> int:
+    id_, left, right = parse_config(config)
+    if can_be_balanced(left, right):
+        return id_
+    else:
+        return 0
