@@ -77,6 +77,16 @@ def combination_can_be_found(
             if combination_can_be_found(target, current + x, used_fractions[i:]):
                 return True
     return False
+    """this seems to be the frobenius problem -> understand and adapt this code
+    dp = [False] * (target + 1)
+    dp[0] = True
+
+    for fraction in fractions:
+        for i in range(fraction, target + 1):
+            dp[i] = dp[i] or dp[i - fraction]
+
+    return dp[target]
+    """
 
 
 def filter_fractions(target: Fraction, fractions: Iterable[Fraction]) -> Tuple[Fraction]:
