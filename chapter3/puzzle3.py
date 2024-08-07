@@ -61,34 +61,6 @@ def compute_weight_fraction(flasks: Flasks) -> Fraction:
     return Fraction(nom, denom)
 
 
-def combination_can_be_found(
-    target: Fraction, current: Fraction, used_fractions: Tuple[Fraction]
-) -> bool:
-    if target == current:
-        return True
-    elif current > target:
-        return False
-    elif len(used_fractions) == 1:
-        return ((target - current) % used_fractions[0]) == 0
-    else:
-        for i, x in enumerate(used_fractions):
-            if ((target - current) % x) == 0:
-                return True
-            if combination_can_be_found(target, current + x, used_fractions[i:]):
-                return True
-    return False
-    """this seems to be the frobenius problem -> understand and adapt this code
-    dp = [False] * (target + 1)
-    dp[0] = True
-
-    for fraction in fractions:
-        for i in range(fraction, target + 1):
-            dp[i] = dp[i] or dp[i - fraction]
-
-    return dp[target]
-    """
-
-
 def filter_fractions(target: Fraction, fractions: Iterable[Fraction]) -> Tuple[Fraction]:
     fractions = sorted(set(fractions))
     filtered = [fractions[0]]
@@ -116,11 +88,43 @@ def filter_fractions(target: Fraction, fractions: Iterable[Fraction]) -> Tuple[F
     return tuple(reversed(filtered))
 
 
+def get_int_factor(target: Fraction, fractions: Iterable[Fraction]) -> int:
+    int_factor = target.denominator
+    for f in fractions:
+        temp = f * int_factor
+        int_factor *= temp.denominator
+    return int_factor
+
+
+def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction]) -> bool:
+    filtered_water_fractions = filter_fractions(target.denominator, water_fractions)
+    factor = get_int_factor(target, filtered_water_fractions)
+    target_int = int(target * factor)
+    water_ints = tuple(int(x * factor) for x in water_fractions)
+
+    # dynamic programming solution of the coin change problem
+    print(f"\n{target_int=}")
+    S = water_ints
+    m = len(water_ints)
+    n = target_int
+    table = [[0 for x in range(m)] for x in range(n + 1)]
+
+    for i in range(m):
+        table[0][i] = 1
+
+    for i in range(1, n + 1):
+        for j in range(m):
+            x = table[i - S[j]][j] if i - S[j] >= 0 else 0
+            y = table[i][j - 1] if j >= 1 else 0
+            table[i][j] = x + y
+
+    return table[n][m - 1] > 0
+
+
 def can_be_balanced(fixed: Flasks, free: Flasks) -> bool:
     target = compute_weight_fraction(fixed)
     water_fractions = compute_water_fractions(free)
-    water_fractions = filter_fractions(target.denominator, water_fractions)
-    return combination_can_be_found(target, Fraction(0, target.denominator), water_fractions)
+    return combination_can_be_found(target, water_fractions)
 
 
 def compute_per_config_job(config: str) -> int:
