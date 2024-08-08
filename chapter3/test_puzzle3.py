@@ -34,7 +34,7 @@ def test_parse_config(config: str, id_: Optional[bool], fixed_flasks: Flasks, fr
     "flasks, fraction_values",
     [
         ((2, 3), {(1, 2), (1, 3), (1, 6)}),
-        ((3, 12), {(1, 3), (1, 12), (1, 4), (1, 6)}),
+        ((3, 12), {(1, 3), (1, 12), (1, 4)}),
     ],
 )
 def test_compute_water_fractions(flasks: Flasks, fraction_values: List[Tuple[int, int]]):

@@ -35,10 +35,11 @@ def compute_water_fractions(flasks: Flasks) -> Set[Fraction]:
 
     for x, y in permutations(fractions, 2):
         temp = deepcopy(y)
-        while temp <= x:
-            fractions.add(temp)
+        while temp < x:
             temp += y
-        fractions.add(temp - x)
+        remaining = temp - x
+        if remaining > 0:
+            fractions.add(remaining)
 
     return fractions
 
@@ -85,6 +86,7 @@ def filter_fractions(target: Fraction, fractions: Iterable[Fraction]) -> Tuple[F
             if gcd_ == target.denominator:
                 filtered_denominators.update(dd)
     filtered = [f for f in filtered if f.denominator in filtered_denominators]
+
     return tuple(reversed(filtered))
 
 
@@ -96,17 +98,8 @@ def get_int_factor(target: Fraction, fractions: Iterable[Fraction]) -> int:
     return int_factor
 
 
-def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction]) -> bool:
-    filtered_water_fractions = filter_fractions(target.denominator, water_fractions)
-    factor = get_int_factor(target, filtered_water_fractions)
-    target_int = int(target * factor)
-    water_ints = tuple(int(x * factor) for x in water_fractions)
-
+def compute_coin_change_num(S: Tuple[int], m: int, n: int) -> int:
     # dynamic programming solution of the coin change problem
-    print(f"\n{target_int=}")
-    S = water_ints
-    m = len(water_ints)
-    n = target_int
     table = [[0 for x in range(m)] for x in range(n + 1)]
 
     for i in range(m):
@@ -119,6 +112,41 @@ def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction])
             table[i][j] = x + y
 
     return table[n][m - 1] > 0
+
+
+def is_divisible_by_any(n: int, numbers: Iterable[int]) -> bool:
+    for x in numbers:
+        if n % x == 0:
+            return True
+    return False
+
+
+def estimate_frobenius_number(numbers: Iterable[int]) -> int:
+    return reduce(mul, numbers)
+
+
+def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction]) -> bool:
+    filtered_water_fractions = filter_fractions(target, water_fractions)
+    factor = get_int_factor(target, filtered_water_fractions)
+    target_int = int(target * factor)
+    water_ints = tuple(int(x * factor) for x in water_fractions)
+
+    # result = compute_coin_change_num(water_ints, len(water_ints), target_int) > 0
+    # print(f"{len(water_ints)=} {target_int=}")
+
+    result = False
+    if len(filtered_water_fractions) == 0:
+        result = False
+    elif is_divisible_by_any(target_int, water_ints):
+        result = True
+    else:
+        frobenius_number = estimate_frobenius_number(water_ints)
+        if target_int > frobenius_number:
+            result = True
+        else:
+            result = compute_coin_change_num(water_ints, len(water_ints), target_int) > 0
+        result = target_int > frobenius_number
+    return result
 
 
 def can_be_balanced(fixed: Flasks, free: Flasks) -> bool:
