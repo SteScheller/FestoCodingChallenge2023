@@ -61,7 +61,7 @@ def test_compute_weight_fraction(flasks: Flasks, fraction_values: List[Tuple[int
         ({(1, 3), (1, 2), (1, 4)}, (8, 12), ((1, 3), (1, 4))),
     ],
 )
-def test_filter_fractionss(
+def test_filter_fractions(
     fraction_values: Set[Tuple[int, int]],
     target_values: Tuple[int, int],
     filtered_fraction_values: Tuple[Tuple[int, int]],
