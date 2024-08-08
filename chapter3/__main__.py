@@ -7,7 +7,7 @@ from tqdm.contrib.concurrent import process_map
 
 from .puzzle1 import create_hammers, is_long_key_forgeable
 from .puzzle2 import compute_task
-from .puzzle3 import compute_per_config_job
+from .puzzle3 import parse_config, can_be_balanced
 
 
 p = Path(__file__).parent / "resources"
@@ -37,7 +37,12 @@ print(f"Puzzle 2: {solution}")
 
 with open(p / "33_trap_water.txt") as f:
     configs = f.readlines()
-sum_ = sum(process_map(compute_per_config_job, configs, max_workers=mp.cpu_count(), chunksize=1))
+# sum_ = sum(process_map(compute_per_config_job, configs, max_workers=mp.cpu_count(), chunksize=1))
+sum_ = 0
+for c in tqdm(configs):
+    id_, left, right = parse_config(c)
+    if can_be_balanced(left, right):
+        sum_ += id_
 print(f"Puzzle 3: {sum_}")
 
 panel = Image.open(Path(__file__).parent / "resources/cipher_matrix.png")
