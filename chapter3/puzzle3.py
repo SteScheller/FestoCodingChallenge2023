@@ -67,23 +67,27 @@ def get_int_factor(target: Fraction, fractions: Iterable[Fraction]) -> int:
     for f in fractions:
         temp = f * int_factor
         int_factor *= temp.denominator
+
     return int_factor
 
 
-def compute_coin_change_num(S: Tuple[int], m: int, n: int) -> int:
-    # dynamic programming solution of the coin change problem
-    table = [[0 for x in range(m)] for x in range(n + 1)]
+def compute_coin_change_num(coins: Tuple[int], target: int) -> int:
+    # create the ways array
+    ways = [0 for _ in range(target + 1)]
 
-    for i in range(m):
-        table[0][i] = 1
+    # set the first way to 1 because its 0 and there is 1 way to make 0 with 0 coins
+    ways[0] = 1
 
-    for i in range(1, n + 1):
-        for j in range(m):
-            x = table[i - S[j]][j] if i - S[j] >= 0 else 0
-            y = table[i][j - 1] if j >= 1 else 0
-            table[i][j] = x + y
+    # go through all of the coins
+    for coin in coins:
+        # make a comparison to each index value of ways with the coin value.
+        for j in range(len(ways)):
+            if coin <= j:
+                # update the ways array
+                ways[j] += ways[j - coin]
 
-    return table[n][m - 1] > 0
+    # return the value at the Nth position of the ways array.
+    return ways[target]
 
 
 def is_divisible_by_any(n: int, numbers: Iterable[int]) -> bool:
@@ -91,15 +95,6 @@ def is_divisible_by_any(n: int, numbers: Iterable[int]) -> bool:
         if n % x == 0:
             return True
     return False
-
-
-def estimate_frobenius_number(numbers: Iterable[int]) -> int:
-    # educated guess based on target int distribution :)
-    # return reduce(mul, numbers)
-    # return 94198543 # largest found target integer
-    return 94198543 + 1  # largest found target integer; did not work out, result 312274 is wrong
-    # return 10000000 # did not work out, result 398870 is wrong
-    # return 1000000 # did not work out, result 733955 is wrong
 
 
 def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction]) -> bool:
@@ -116,11 +111,7 @@ def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction])
     elif is_divisible_by_any(target_int, water_ints):
         result = True
     else:
-        frobenius_number = estimate_frobenius_number(water_ints)
-        if target_int > frobenius_number:
-            result = True
-        else:
-            result = compute_coin_change_num(water_ints, len(water_ints), target_int) > 0
+        result = compute_coin_change_num(water_ints, target_int) > 0
 
     return result
 
