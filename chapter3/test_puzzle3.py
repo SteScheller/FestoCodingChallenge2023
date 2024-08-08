@@ -58,7 +58,7 @@ def test_compute_weight_fraction(flasks: Flasks, fraction_values: List[Tuple[int
 @pytest.mark.parametrize(
     "fraction_values, target_values, filtered_fraction_values",
     [
-        ({(1, 3), (1, 2), (1, 4)}, (8, 12), ((1, 3), (1, 4))),
+        ({(1, 3), (1, 2), (1, 4)}, (8, 12), ((1, 4), (1, 3))),
     ],
 )
 def test_filter_fractions(

@@ -59,7 +59,7 @@ def filter_fractions(target: Fraction, fractions: Iterable[Fraction]) -> Tuple[F
         if not is_multiple:
             filtered.append(f)
 
-    return sorted(set(filtered))
+    return tuple(sorted(set(filtered)))
 
 
 def get_int_factor(target: Fraction, fractions: Iterable[Fraction]) -> int:
