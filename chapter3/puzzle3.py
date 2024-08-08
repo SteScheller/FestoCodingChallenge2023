@@ -155,6 +155,9 @@ def can_be_balanced(fixed: Flasks, free: Flasks) -> bool:
     return combination_can_be_found(target, water_fractions)
 
 
+# result with this code is 24268 -> wrong :(
+
+
 def compute_per_config_job(config: str) -> int:
     id_, left, right = parse_config(config)
     if can_be_balanced(left, right):
