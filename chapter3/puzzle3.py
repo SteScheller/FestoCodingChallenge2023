@@ -97,7 +97,8 @@ def estimate_frobenius_number(numbers: Iterable[int]) -> int:
     # educated guess based on target int distribution :)
     # return reduce(mul, numbers)
     # return 94198543 # largest found target integer
-    return 10000000
+    return 94198543 + 1  # largest found target integer; did not work out, result 312274 is wrong
+    # return 10000000 # did not work out, result 398870 is wrong
     # return 1000000 # did not work out, result 733955 is wrong
 
 
