@@ -1,0 +1,6 @@
+
+ 858104847189.1879              # unsortiert
+3132168597339.758               # sorted reverse
+1199375024020.9883              # sorted
+    116775839.81750266          # min from 100 shuffled
+    108167282.89861259          # min from 1000 shuffled
