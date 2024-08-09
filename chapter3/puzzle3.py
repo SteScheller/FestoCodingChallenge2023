@@ -1,10 +1,9 @@
 from typing import Tuple, Optional, Set, Iterable
 from re import search
-from operator import mul
-from math import gcd
-from itertools import permutations, combinations
-from functools import reduce
+from math import ceil
+from itertools import combinations
 from fractions import Fraction
+from random import shuffle
 
 Flasks = Tuple[int]
 
@@ -28,13 +27,19 @@ def parse_config(config: str) -> Tuple[Optional[int], Flasks]:
 def compute_water_fractions(flasks: Flasks) -> Set[Fraction]:
     fractions = {Fraction(1, n) for n in flasks}
 
-    for x, y in permutations(fractions, 2):
-        temp = y
-        while temp < x:
-            temp += y
-        remaining = temp - x
-        if remaining > 0:
-            fractions.add(remaining)
+    for x, y in combinations(fractions, 2):
+        (bigger, smaller) = (x, y) if x > y else (y, x)
+        # the smaller container can be poured into the bigger one multiple times until it is full
+        # and some remainder is left
+        remainder = ceil(bigger / smaller) * smaller - bigger
+        if remainder > 0:  # we don't want to add 0
+            fractions.add(remainder)
+
+        # when pouring the bigger container into the smaller the remainder will always be a
+        # multiple of the smaller plus some remainder
+        remainder = bigger % smaller
+        if remainder > 0:  # we don't want to add 0
+            fractions.add(remainder)
 
     return fractions
 
@@ -62,13 +67,22 @@ def filter_fractions(target: Fraction, fractions: Iterable[Fraction]) -> Tuple[F
     return tuple(sorted(set(filtered)))
 
 
-def get_int_factor(target: Fraction, fractions: Iterable[Fraction]) -> int:
-    int_factor = target.denominator
-    for f in fractions:
-        temp = f * int_factor
-        int_factor *= temp.denominator
+def get_int_factor(fractions: Iterable[Fraction]) -> int:
+    """Random search a mininmal factor that converts all fractions to integers"""
+    min_int_factor = None
+    sequence = list(fractions)
+    for _ in range(100):
+        int_factor = 1
+        shuffle(sequence)
+        for x in sequence:
+            if (x * int_factor).denominator != 1:
+                int_factor *= x.denominator
+        if min_int_factor is None:
+            min_int_factor = int_factor
+        else:
+            min_int_factor = min(min_int_factor, int_factor)
 
-    return int_factor
+    return min_int_factor
 
 
 def compute_coin_change_num(coins: Tuple[int], target: int) -> int:
@@ -99,11 +113,9 @@ def is_divisible_by_any(n: int, numbers: Iterable[int]) -> bool:
 
 def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction]) -> bool:
     filtered_water_fractions = filter_fractions(target, water_fractions)
-    factor = get_int_factor(target, filtered_water_fractions)
+    factor = get_int_factor([target] + list(filtered_water_fractions))
     target_int = int(target * factor)
     water_ints = tuple(int(x * factor) for x in water_fractions)
-
-    # print(f"{len(water_ints)=} {target_int=}")
 
     result = False
     if len(filtered_water_fractions) == 0:
@@ -112,6 +124,10 @@ def combination_can_be_found(target: Fraction, water_fractions: Tuple[Fraction])
         result = True
     else:
         result = compute_coin_change_num(water_ints, target_int) > 0
+
+    # print(f"{len(water_ints)=} {target_int=} {target=} {factor=}")
+    # print(f"{[(item.numerator,  item.denominator) for item in filtered_water_fractions]}")
+    # print(f"{result=}")
 
     return result
 

@@ -1,9 +1,10 @@
-import multiprocessing as mp
+# import multiprocessing as mp
 from pathlib import Path
 
 from PIL import Image
 from tqdm import tqdm
-from tqdm.contrib.concurrent import process_map
+
+# from tqdm.contrib.concurrent import thread_map
 
 from .puzzle1 import create_hammers, is_long_key_forgeable
 from .puzzle2 import compute_task
@@ -37,7 +38,7 @@ print(f"Puzzle 2: {solution}")
 
 with open(p / "33_trap_water.txt") as f:
     configs = f.readlines()
-# sum_ = sum(process_map(compute_per_config_job, configs, max_workers=mp.cpu_count(), chunksize=20))
+# sum_ = sum(thread_map(compute_per_config_job, configs, max_workers=mp.cpu_count()))
 sum_ = 0
 for c in tqdm(configs):
     id_, left, right = parse_config(c)

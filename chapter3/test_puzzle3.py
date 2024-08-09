@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple, Set
+from typing import Optional, List, Tuple, Set, Iterable
 
 import pytest
 
@@ -10,6 +10,7 @@ from chapter3.puzzle3 import (
     filter_fractions,
     compute_weight_fraction,
     can_be_balanced,
+    get_int_factor,
 )
 
 
@@ -34,7 +35,8 @@ def test_parse_config(config: str, id_: Optional[bool], fixed_flasks: Flasks, fr
     "flasks, fraction_values",
     [
         ((2, 3), {(1, 2), (1, 3), (1, 6)}),
-        ((3, 12), {(1, 3), (1, 12), (1, 4)}),
+        ((3, 12), {(1, 3), (1, 12)}),
+        ((2, 7), {(1, 2), (1, 7), (1, 14)}),
     ],
 )
 def test_compute_water_fractions(flasks: Flasks, fraction_values: List[Tuple[int, int]]):
@@ -59,6 +61,8 @@ def test_compute_weight_fraction(flasks: Flasks, fraction_values: List[Tuple[int
     "fraction_values, target_values, filtered_fraction_values",
     [
         ({(1, 3), (1, 2), (1, 4)}, (8, 12), ((1, 4), (1, 3))),
+        ({(1, 3), (1, 12), (1, 4)}, (1, 4), ((1, 12),)),
+        ({(1, 2), (1, 7), (1, 14), (3, 14), (5, 14)}, (4, 15), ((1, 14),)),
     ],
 )
 def test_filter_fractions(
@@ -85,3 +89,17 @@ def test_filter_fractions(
 def test_can_be_balanced(config: str, result: bool):
     _, fixed, free = parse_config(config)
     assert can_be_balanced(fixed, free) == result
+
+
+@pytest.mark.parametrize(
+    "fractions, expected",
+    [
+        ((Fraction(1, 8), Fraction(1, 3), Fraction(1, 2)), 24),
+        ((Fraction(1, 4), Fraction(1, 2), Fraction(1, 8)), 8),
+        ((Fraction(1, 8), Fraction(1, 2), Fraction(1, 4)), 8),
+        ((Fraction(1, 2), Fraction(1, 8), Fraction(1, 4)), 8),
+        ((Fraction(1, 3), Fraction(1, 5), Fraction(1, 7)), 105),
+    ],
+)
+def test_get_int_factor(fractions: Iterable[Fraction], expected: int):
+    assert get_int_factor(fractions) == expected
